@@ -1,0 +1,27 @@
+[
+    {
+        "index": 1,
+        "attribute": {
+            "name": "Boil'd",
+            "description": "you were slashed by a factor of 2",
+            "image": "https://ipfs.io/ipfs/QmRN4vbdkP4jUkB4TtgmkivoGdLzWgHSaDELrN2QTVKqkX",
+            "external_url": "https://nfts.hotpotato.market/viewer/v1/1",
+            "background_color": "160936",
+            "content_type": "image",
+            "attributes":[
+                {
+                    "trait_type": "Type",
+                    "value": "Utility"
+                },
+                {
+                    "trait_type": "Function",
+                    "value": "Button Discount"
+                },
+                {
+                    "trait_type": "Amount",
+                    "value": "20% Off"
+                }
+            ]
+        }
+    }
+]
