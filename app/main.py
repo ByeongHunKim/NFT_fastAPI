@@ -6,7 +6,7 @@ from PIL import Image
 
 # aleph
 from aleph_client.chains.ethereum import ETHAccount
-from aleph_client.asynchronous import get_posts, create_store
+from aleph_client.asynchronous import get_posts, create_store, get_messages
 
 # fastAPI
 from fastapi import FastAPI
@@ -33,7 +33,6 @@ async def get_metadata(id: int):
 @app.get("/nfts/{id}.json")
 async def get_or_generate_nft(id: int):
 
-    
     lists = [
         r"../images/1.png",
         r"../images/2.png",
@@ -54,13 +53,41 @@ async def get_or_generate_nft(id: int):
     selected_img.save('nft.png')
 
     account = ETHAccount('8033d0bfdca6399aab7d26e67cf4fa67e2150307702f54571907c5447339bbad')
+    address = account.get_address()
 
+    response = await get_messages(
+        addresses=[address],
+        refs=[f'nft-{id}'],
+        message_type=["STORE"]
+    )
+    
+    len_response = len(response.messages)
+    print("len_response>>>>", len_response)
 
-    file = open(r"./nft.png", "rb").read()
+    # if len_response > 0 :
+    if len(response.message) > 0 :
+        result = response.messages[0]
+    else:
+        file = open(r"./nft.png", "rb").read()
+        result = await create_store(
+            file_content=file,
+            account=account,
+            storage_engine="ipfs",
+            extra_fields={
+                "name": f'Random NFT #{id}',
+                "description": "TODO: Project description coming soon.... "
+            },
+            ref=f'nft-{id}'
+        )
 
-    result = await create_store(file_content=file, account=account, storage_engine="ipfs")
-    # print("result", result) # 전체 정보
-    # return {"data": result.content.item_hash}
+    print("result>>>", result)
+    # # print("result", result) # 전체 정보
+    # # return {"data": result.content.item_hash}
 
-    return { "url": f'https://ipfs.io/ipfs/{result.content.item_hash}' }
+    return {
+        "image": f'https://ipfs.io/ipfs/{result.content.item_hash}',
+        "name": f'{result.content.name}',
+        "description": f'{result.content.description}',
+        "address": account.get_address()
+    }
 
